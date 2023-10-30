@@ -1,0 +1,78 @@
+﻿@using BankWEB.Models.Enums;
+@{
+    ViewData["Title"] = "Contribution";
+}
+@model ContributionData
+
+<div class="container">
+    <form id="ContributionForm" method="post" class="d-flex flex-column gap-3 align-items-center">
+        <div class="contribution-item-container col-6 d-flex gap-2 align-items-center p-3">
+            <div>
+                <label for="inputAccount" class="col-form-label fs-5 fw-medium">Account</label>
+            </div>
+            <div class="input-group">
+                <select id="inputAccount" class="form-select accounts-select" asp-for="AccountId" asp-items="ViewBag.Accounts"></select>
+                <button type="button" class="btn btn-outline-primary bi-info-circle-fill border-2"
+                        data-bs-toggle="tooltip" data-bs-placement="top"
+                        data-bs-custom-class="custom-tooltip"
+                        title="Select the account from which the contribution will be opened">
+                    <span class="validation-span" style="display: none" asp-validation-for="AccountId"></span>
+                </button>
+            </div>
+        </div>
+        <div class="d-flex gap-3 col-8">
+            <div class="contribution-item-container col-6 d-flex gap-2 align-items-center p-3">
+                <div>
+                    <label for="inputDuration" class="col-form-label fs-5 fw-medium">Duration</label>
+                </div>
+                <div class="input-group">
+                    <select id="inputDuration" class="form-select duration-select" asp-for="Percents">
+                        @foreach (KeyValuePair<float, TimeSpan> item in Converters.DurationToPercents)
+                        {
+                            <option value="@item.Key">@item.Value.TotalDays Days</option>
+                        }
+                    </select>
+                    <label class="input-group-text percents-input-helper" for="inputDuration">5%</label>
+                    <button type="button" class="btn btn-outline-primary bi-info-circle-fill border-2"
+                            data-bs-toggle="tooltip" data-bs-placement="top"
+                            data-bs-custom-class="custom-tooltip"
+                            title="Select the contribution term in days">
+                        <span class="validation-span" style="display: none" asp-validation-for="Percents"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="contribution-item-container col-6 d-flex gap-2 align-items-center p-3">
+                <div>
+                    <label for="inputMoney" class="col-form-label fs-5 fw-medium">Money</label>
+                </div>
+                <div class="input-group">
+                    <input id="inputMoney" class="form-control money-input" type="number" asp-for="Money" min="0">
+                    <label class="input-group-text currency-input-helper" for="inputMoney">RUB</label>
+                    <button type="button" class="btn btn-outline-primary bi-info-circle-fill border-2"
+                            data-bs-toggle="tooltip" data-bs-placement="top"
+                            data-bs-custom-class="custom-tooltip"
+                            title="Enter the amount for which you want to open a contribution">
+                        <span class="validation-span" style="display: none" asp-validation-for="Money"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-6" style="z-index: 10">
+            <button class="btn btn-lg bg-white fw-medium w-100" type="submit">Create</button>
+        </div>
+    </form>
+</div>
+<script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    const CurrencyArray = @Html.Raw(Json.Serialize(ViewBag.Currency));
+</script>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script defer src="~/js/ErrorTransferToTooltips.js"></script>
+    <script defer src="~/js/MoneyInput.js"></script>
+    <script defer src="~/js/CurrencyPaster.js"></script>
+    <script defer src="~/js/PercentsPaster.js"></script>
+}

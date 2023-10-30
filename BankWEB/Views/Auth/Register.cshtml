@@ -1,0 +1,41 @@
+﻿@using BankWEB.Models.Enums;
+@model BankWEB.Models.UserReg
+@{
+    ViewData["Title"] = "Registration";
+}
+
+@section Scripts {
+    <script src="~/js/PasswordChecker.js"></script>
+}
+
+<div class="container auth-container">
+    <h1>Sign Up</h1>
+    <form id="form-validation" method="post" onsubmit="return isPasswordMatch()" asp-action="Register" asp-antiforgery=true>
+        <div class="mb-3">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+        <div class="mb-3">
+            <label for="username" class="form-label">Login</label>
+            <input required type="text" class="form-control" id="username" aria-describedby="loginHelp" maxlength="50" asp-for="UsernameProp">
+            <div id="loginHelp" class="form-text">We'll never share your login with anyone else.</div>
+        </div>
+        <div class="mb-3">
+            <label for="status" class="form-label">Login</label>
+            <select required class="form-select" id="status" aria-describedby="statusHelp" asp-for="Status" asp-items="Html.GetEnumSelectList<Status>()"></select>
+            <div id="statusHelp" class="form-text">Your client status</div>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input required type="password" class="form-control" id="password" aria-describedby="passHelp" minlength="5" maxlength="50" asp-for="Password">
+            <div id="passHelp" class="form-text">Must be at least <b>5</b> characters long and contain only <b>numbers, special symbols and Latin letters</b></div>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Repeat password</label>
+            <input required type="password" class="form-control" id="password-rep" aria-describedby="password-rep-error">
+            <div id="password-rep-error" class="form-text">Must be <b>match the password</b></div>
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+</div>
+
+

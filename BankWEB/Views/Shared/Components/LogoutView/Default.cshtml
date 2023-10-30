@@ -1,0 +1,38 @@
+﻿@if (!User.Identity.IsAuthenticated)
+{
+    <ul class="nav justify-content-end">
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" asp-action="Login" asp-controller="Auth">Sign In</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Register" asp-controller="Auth">Sign Up</a>
+        </li>
+    </ul>
+}
+else if (Html.ViewContext.RouteData.Values["controller"]!.ToString() == "Contribution")
+{
+    <ul class="nav justify-content-start">
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Index" asp-controller="Home">&#10094; Back</a>
+        </li>
+    </ul>
+}
+else 
+{
+    <ul class="nav justify-content-end">
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Transfers" asp-controller="Home">Transfers</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Index" asp-controller="Home">Home</a>
+        </li>
+        <li class="nav-item justify-content-start">
+            <a class="nav-link" asp-action="Privacy" asp-controller="Home">Privacy</a>
+        </li>
+        <li class="nav-item">
+            <form method="post" asp-controller="Auth" asp-action="Logout" id="logoutform" asp-antiforgery="true">
+                <a class="nav-link" href="#" onclick="document.getElementById('logoutform').submit()">Log Out</a>
+            </form>
+        </li>
+    </ul>
+}

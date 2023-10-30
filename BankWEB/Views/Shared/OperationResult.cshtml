@@ -1,0 +1,49 @@
+﻿@{
+    Layout = null;
+}
+<html lang="en">
+<head>
+    <title>@ViewData["Title"]</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Refresh" content="5;/"/>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" type="text/css" media="screen" runat="server" />
+    <link rel="stylesheet" href="/css/fonts.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <main>
+        <div class="container auth-container d-flex flex-column gap-4">
+            <h1 class="text-center">@(ViewBag.Operation ?? "Operation") successful</h1>
+            <ul>
+                @{
+                    switch (Model)
+                    {
+                        case AccountsTransferModel transModel:
+                            <li class="fs-5"><b>@transModel.Money @transModel.FromCurrency</b> were successfully transferred</li>
+                            <li class="fs-5">Money has been converted to: <b>@transModel.ToCurrency</b></li>
+                            break;
+                        case ContributionData data:
+                            <li class="fs-5">Contribution was created</li>
+                            <li class="fs-5">At a percentage: <b>@data.Percents %</b></li>
+                            <li class="fs-5">Duration: <b>@data.Duration.TotalDays Days</b></li>
+                            <li class="fs-5">Credit Amount: <b>@data.Money @data.Currency</b></li>
+                            break;
+                        case GlobalTransferModel globalTrans:
+                            <li class="fs-5"><b>@globalTrans.Money @globalTrans.AccountCurrency</b> were successfully transferred</li>
+                            <li class="fs-5">The commission was: <b>@String.Format("{0:.00}", globalTrans.Money / 100 * (decimal)globalTrans.Commission) @globalTrans.AccountCurrency</b></li>
+                            break;
+                        case Account account:
+                            <li class="fs-5">Account <b>@account.Title</b> was successfully deleted</li>
+                            <li class="fs-5">Funds were transferred to the <b>Main</b> account</li>
+                            <li class="fs-5">Amount: <b>@account.Money @account.Currency</b></li>
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            </ul>
+            <a class="btn btn-primary w-100" asp-controller="Home" asp-action="Index" role="button">Sounds good</a>
+        </div>
+    </main>
+</body>
+</html>

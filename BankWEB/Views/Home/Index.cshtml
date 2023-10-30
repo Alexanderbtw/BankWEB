@@ -1,0 +1,241 @@
+﻿@using BankWEB.Models.Enums;
+@using System.Globalization;
+@{
+    ViewData["Title"] = "Home Page";
+}
+@model Client
+
+<div class="container home">
+    <div class="left-col">
+        <div id="accounts" class="home-info-container">
+            <h2>Accounts</h2>
+            <div class="account-container">
+                @{
+                    Account? main = Model.Accounts.FirstOrDefault();
+                    if (main != null)
+                    {
+                        <div class="account-item" id="@main.Id"><span class="acc-name">@main.Title</span><span class="money">@main.Money.ToString("N2", CultureInfo.InvariantCulture)</span><span class="currency">@main.Currency</span><drop-down class="dropdown float-end" target-id="@main.Id" is-safe="true" /></div>
+                    }
+                    foreach (var acc in Model.Accounts.Skip(1))
+                    {
+                        <div class="account-item" id="@acc.Id"><span class="acc-name">@acc.Title</span><span class="money">@acc.Money.ToString("N2", CultureInfo.InvariantCulture)</span><span class="currency">@acc.Currency</span><drop-down class="dropdown float-end" target-id="@acc.Id" /></div>
+                    }
+                }
+            </div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAccountModal">Create new Account</button>
+        </div>
+        <div id="contributions" class="home-info-container">
+            <h2>Contributions</h2>
+            <div class="account-container">
+                @foreach (var contr in Model.Contributions)
+                {
+                    <div class="account-item">
+                        <span class="acc-name">@contr.Money.ToString("N2")</span>
+                        <span class="money">@contr.Percents %</span>
+                        <span class="currency">@contr.EndDate.ToString("d", CultureInfo.InvariantCulture)</span>
+                        <span class="interest">@contr.Currency</span>
+                    </div>
+                }
+            </div>
+            <form asp-controller="Contribution" asp-action="Contribution" method="get">
+                <button type="submit" class="btn btn-primary w-100">Create new Contribution</button>
+            </form>
+        </div>
+    </div>
+    <div class="right-col">
+        <div id="user-info" class="home-info-container">
+            <h2>User</h2>
+            @{
+                if (ViewData["Avatar"] != null)
+                {
+                    <button class="circle" data-bs-toggle="modal" data-bs-target="#avatarModal" style="background-image: url(@ViewData["Avatar"])"></button>
+                }
+                else
+                {
+                    <button class="circle" data-bs-toggle="modal" data-bs-target="#avatarModal"></button>
+                }
+            }
+            <div class="user-info-item">@Model.Username</div>
+            <div class="user-info-item">@Model.Status</div>
+        </div>
+        <div class="home-info-container">
+            <h2>Operations</h2>
+            <button type="button" class="btn btn-primary btn-modal" data-bs-toggle="modal" data-bs-target="#transferModal">Transfers between your accounts</button>
+            <button type="button" class="btn btn-primary btn-modal" data-bs-toggle="modal" data-bs-target="#replenishmentModal">Replenishment</button>
+            <button type="button" class="btn btn-primary btn-modal" data-bs-toggle="modal" data-bs-target="#withdrawModal">Withdraw</button>
+        </div>
+    </div>
+</div>
+
+@section Modals {
+    @* Transfer betw accs *@
+    <div class="modal fade" id="transferModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="transferModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="transferModalLabel">Transfer between your accounts</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="TransferBetwAccount" method="post" id="TransferForm" class="modal-form">
+                    <div class="modal-body clearfix">
+                        <div>
+                            <h6>From</h6>
+                            @Html.CreateDropDownList(Model.Accounts, "fromAccountId", "exclusive-select accounts-selector")
+                        </div>
+                        <div>
+                            <h6>Amount</h6>
+                            <div class="input-group">
+                                <input type="number" class="form-control withdraw-input money-input" aria-label="Currency" name="money" required min="1" max="1000000" step="0.01">
+                                <span class="input-group-text currency-input-helper"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <h6>To</h6>
+                             @Html.CreateDropDownList(Model.Accounts, "toAccountId", "exclusive-select")
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="submit" form="TransferForm" class="btn btn-primary btn-modal-submit" disabled>Transfer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @* Replenishment *@
+    <div class="modal fade" id="replenishmentModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="replenishmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="replenishmentModalLabel">Replenishment</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="ReplenishmentAccount" method="post" id="ReplenishmentForm" class="modal-form">
+                    <div class="modal-body clearfix">
+                        <div>
+                            <h6>Replenishment amount</h6>
+                            <div class="input-group">
+                                <input type="number" class="form-control money-input" aria-label="Currency" name="money" required min="1" max="1000000" step="0.01">
+                                <span class="input-group-text currency-input-helper"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <h6>Account</h6>
+                            @Html.CreateDropDownList(Model.Accounts, "accountId", "accounts-selector")
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="submit" form="ReplenishmentForm" class="btn btn-primary btn-modal-submit">Top Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @* Withdraw *@
+    <div class="modal fade" id="withdrawModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="withdrawModalLabel">Withdraw</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="WithdrawAccount" method="post" id="WithdrawForm" class="modal-form">
+                    <div class="modal-body clearfix">
+                        <div>
+                            <h6>Account</h6>
+                            @Html.CreateDropDownList(Model.Accounts, "accountId", "accounts-selector")
+                        </div>
+                        <div>
+                            <h6>Withdraw amount</h6>
+                            <div class="input-group">
+                                <input type="number" class="form-control withdraw-input money-input" aria-label="Currency" name="money" required min="1" max="1000000" step="0.01">
+                                <span class="input-group-text currency-input-helper"></span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="submit" form="WithdrawForm" class="btn btn-primary btn-modal-submit" disabled>Take Off</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @* Create Acc *@
+    <div class="modal fade" id="createAccountModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="createAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="createAccountModalLabel">Create Account</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="CreateAccount" method="post" id="CreateAccForm">
+                    <div class="modal-body clearfix">
+                            <input type="hidden" name="OwnerId" value="@Model.Id"/>
+                            <div>
+                                <h6>Title</h6>
+                                <div class="input-group">
+                                    <input name="Title" type="text" class="form-control" required>
+                                </div>
+                            </div>
+                            <div>
+                                <h6>Currency</h6>
+                                <select required name="Currency" asp-items="Html.GetEnumSelectList<Currency>()" class="form-select" aria-label="Default select example"></select>
+                            </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" form="CreateAccForm">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Avatar *@
+    <div class="modal fade" id="avatarModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="avatarModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="avatarModalLabel">Change avatar</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="SetAvatar" method="post" id="AvatarForm" enctype="multipart/form-data">
+                    <div class="modal-body clearfix">
+                        <div>
+                            <h6>Select Image</h6>
+                            <div class="input-group">
+                                <input type="file" accept="image/*" class="form-control" name="image" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="submit" form="AvatarForm" class="btn btn-primary">Change</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Toast Notification *@
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast align-items-center alert-danger" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Account was not selected.
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script defer src="~/js/SelectAccChanger.js"></script>
+    <script defer src="~/js/ModalSubmitChecker.js"></script>
+    <script defer src="~/js/ExclusiveSelectors.js"></script>
+    <script defer src="~/js/MoneyInput.js"></script>
+}

@@ -1,0 +1,28 @@
+﻿@model BankWEB.Models.UserLogin
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container auth-container">
+    <h1>Sign In</h1>
+    <form asp-action="Login" asp-antiforgery=true id="form-validation">
+        <div class="mb-3">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+        <div class="mb-3">
+            <label for="username" class="form-label">Login</label>
+            <input required type="text" class="form-control" id="username" aria-describedby="loginHelp" asp-for="UsernameProp">
+            <div id="loginHelp" class="form-text">We'll never share your login with anyone else.</div>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input required type="password" class="form-control" id="password" asp-for="Password">
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="check">
+            <label class="form-check-label" for="check">Check me out</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
