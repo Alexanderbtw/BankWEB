@@ -23,7 +23,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient("BankAPI", c =>
 {
-    c.BaseAddress = new Uri("https://localhost:44314/api/values/");
+    c.BaseAddress = new Uri("http://localhost:44314/api/values/");
 });
 builder.Services.AddDbContext<AuthBankContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AuthBankContext>().AddDefaultTokenProviders();
